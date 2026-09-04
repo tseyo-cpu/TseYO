@@ -1,0 +1,6 @@
+{
+  "name": "學生獎勵紀錄系統",
+  "description": "老師專用的學生獎勵紀錄與表現分析系統，支援每學年資料庫與自動計分。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

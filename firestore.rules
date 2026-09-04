@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuth() {
+      return request.auth != null;
+    }
+    
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return isAuth() && (getRole() == 'admin' || request.auth.token.email == 'tseyo@pochiu.edu.hk');
+    }
+
+    function isEditor() {
+      return isAuth() && getRole() == 'editor';
+    }
+    
+    function isAtLeastEditor() {
+      return isAdmin() || isEditor();
+    }
+
+    match /users/{userId} {
+      allow read: if isAuth();
+      // Allow users to create their initial profile if they don't exist
+      allow create: if isAuth() && request.auth.uid == userId;
+      allow update, delete: if isAdmin();
+    }
+    
+    match /students/{studentId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+    
+    match /records/{recordId} {
+      allow read: if isAuth();
+      allow write: if isAtLeastEditor();
+    }
+    
+    match /activity_records/{recordId} {
+      allow read: if isAuth();
+      allow write: if isAtLeastEditor();
+    }
+    
+    match /pending_users/{email} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+    
+    match /config/{document=**} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+  }
+}

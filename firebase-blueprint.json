@@ -1,0 +1,61 @@
+{
+  "__description__": "Schema for Student Award System",
+  "collections": {
+    "users": {
+      "__description__": "User role definitions",
+      "__schema__": {
+        "email": "string",
+        "displayName": "string",
+        "role": "string (admin | editor)"
+      },
+      "__security__": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'"
+      }
+    },
+    "students": {
+      "__description__": "Student records",
+      "__schema__": {
+        "id": "string",
+        "schoolId": "string",
+        "className": "string",
+        "classNumber": "string",
+        "chineseName": "string",
+        "englishName": "string",
+        "academicYear": "string"
+      },
+      "__security__": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'"
+      }
+    },
+    "records": {
+      "__description__": "Award records",
+      "__schema__": {
+        "id": "string",
+        "studentId": "string",
+        "academicYear": "string",
+        "date": "string",
+        "category": "string",
+        "awardType": "string",
+        "count": "number",
+        "description": "string",
+        "recordedBy": "string"
+      },
+      "__security__": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'editor')"
+      }
+    },
+    "config": {
+      "__description__": "Global configuration like academic years",
+      "__schema__": {
+        "academicYears": "array of strings"
+      },
+      "__security__": {
+        "read": "request.auth != null",
+        "write": "request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'"
+      }
+    }
+  }
+}
